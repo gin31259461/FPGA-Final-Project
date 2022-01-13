@@ -106,7 +106,7 @@ module snake(
     game_over_status = 0;
 	 
     snake_head_x = 4;
-    nake_head_y = 5;
+    snake_head_y = 5;
 
     current_x = snake_head_x;
     current_y = snake_head_y;
