@@ -195,4 +195,4 @@ task generate_food(
 `when speed level changed, update output level of LEDs`
 
 ## Demo video
-![demo](https://drive.google.com/file/d/1NDLQ0MG4oc19Cr31xsRxH2uvjmTKIGjL/view?usp=sharing)
+[demo](https://drive.google.com/file/d/1NDLQ0MG4oc19Cr31xsRxH2uvjmTKIGjL/view?usp=sharing)
