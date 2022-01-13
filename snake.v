@@ -31,11 +31,11 @@ module snake(
   logic[7:0] board[7:0] =
   '{
     8'b11111111, //x, y start position
-	 8'b11011111,
-	 8'b11011111,
-	 8'b11011111,
-	 8'b11011111,
-	 8'b11011111,
+	 8'b11111111,
+	 8'b11111111,
+	 8'b11111111,
+	 8'b11111111,
+	 8'b11111111,
 	 8'b11111111,
 	 8'b11111111
   };             //matrix x, y start position : row=x, col=y
@@ -62,14 +62,18 @@ module snake(
   int food_xor, food_yor;
   int speed_control;
   int speed_level;
-  int snake_body[2:0][1:0];
+  int snake_body[29:0][1:0];
+  int snake_body_index;
+  int check_status, game_over_status;
+  
+  int i;
+  
   logic[3:0] score;
   logic[3:0] tens_score;
   logic[3:0] bcd_out;
   bit[1:0] motion;
   
-  int rand_index, game_over_status;
-  
+  int rand_index;
   int rand_x[31:0] =
   '{
     2, 6, 5, 7, 0, 1, 4, 3,
@@ -94,28 +98,31 @@ module snake(
 	 
     SEL = 4'b1000;
 	 motion = 2'b11;
+	 
 	 rand_index = 0;
+	 snake_body_index = 0;
+	 
+	 check_status = 0;
 	 game_over_status = 0;
 	 
-    snake_head_x = 3;
+    snake_head_x = 4;
 	 snake_head_y = 5;
-	 
-	 speed_control = 25000000;
-	 score = 0;
-	 speed_level = 0;
-	 snake_body[0][0] = snake_head_x+1;
-	 snake_body[0][1] = snake_head_y;
-	 snake_body[1][0] = snake_head_x+2;
-	 snake_body[1][1] = snake_head_y;
-	 snake_body[2][0] = snake_head_x+3;
-	 snake_body[2][1] = snake_head_y;
-	 snake_tail_x = snake_head_x+4;
-	 snake_tail_y = snake_head_y;
+
 	 current_x = snake_head_x;
 	 current_y = snake_head_y;
 	 
+	 speed_control = 25000000;
+	 speed_level = 0;
+	 
 	 score = 4'b0000;
 	 tens_score = 4'b0000;
+	 
+	 i = 0;
+	 repeat(30) begin
+	   snake_body[i][0] = -1;
+		snake_body[i][1] = -1;
+		i += 1;
+	 end
 	 
   end
   
@@ -147,43 +154,59 @@ module snake(
 		
       if(snake_head_x > 7 || snake_head_x < 0)
 	     game_over_status = 1;
-  
       else if(snake_head_y > 7 || snake_head_y < 0)
 		  game_over_status = 1;
+		  
+		else begin
+		  i = 0;
+		  repeat(29) begin
+		    if(snake_head_x == snake_body[i][0] && snake_head_y == snake_body[i][1])
+			   game_over_status = 1;
+			 i += 1;
+		  end
+		end
 	   
 		if(snake_head_x == food_xor && snake_head_y == food_yor) begin
         rand_index += 1;
 		  score += 1'b1;
+		  
+		  if(snake_body_index != 29) begin
+		    snake_body_index += 1;
+		    check_status = 1;
+		  end
 	   end
 		
 		if(score == 4'b1010) begin
 		  score = 4'b0000;
 		  tens_score += 1'b1;
-		  speed_control -= 1562500;
+		  speed_control -= 2000000;
 		  speed_level += 1;
 		end
   
     	if(rand_index > 31)
 	     rand_index = 0;
-		
-      if(snake_head_x == snake_body[2][0] && snake_head_y == snake_body[2][1])
-        game_over_status = 1;
 
-      board[snake_head_x][snake_head_y] = 1'b0; 
-      board[snake_tail_x][snake_tail_y] = 1'b1;
-  
-      snake_tail_x = snake_body[2][0];
-      snake_tail_y = snake_body[2][1];  
-      snake_body[2][0] = snake_body[1][0];
-      snake_body[2][1] = snake_body[1][1];
-      snake_body[1][0] = snake_body[0][0];
-      snake_body[1][1] = snake_body[0][1];
-      snake_body[0][0] = current_x;
-      snake_body[0][1] = current_y;
-	 
+      if(check_status == 1) begin
+		  snake_body[snake_body_index][0] = current_x;
+        snake_body[snake_body_index][1] = current_y;
+		  check_status = 0;
+		end
+		
+		else if(check_status == 0) begin
+		  board[snake_head_x][snake_head_y] = 1'b0;
+		  board[snake_body[0][0]][snake_body[0][1]] = 1'b1;
+		  i = 0;
+		  repeat(29) begin
+		    snake_body[i][0] = snake_body[i+1][0];
+          snake_body[i][1] = snake_body[i+1][1];
+		    i += 1;
+	     end
+		  snake_body[snake_body_index][0] = current_x;
+        snake_body[snake_body_index][1] = current_y;
+		end
+		
 	   current_x = snake_head_x;
 	   current_y = snake_head_y;
-	 
 	 end
 	 
   end
