@@ -168,21 +168,21 @@ task generate_food(
   always @(posedge CLK_div1000HZ) begin 
     	
     if(SEL == 4'b1111)
-	    SEL = 4'b1000;
-	  else
-	    SEL = SEL + 1'b1;
-	 
-	  if(game_over_status == 1) begin
-	    DATA_G = 8'b11111111;
-	    DATA_R = game_over[SEL[2:0]];
-	  end
-	  else
-	    DATA_G = board[SEL[2:0]];
+      SEL = 4'b1000;
+    else
+      SEL = SEL + 1'b1;
+
+    if(game_over_status == 1) begin
+      DATA_G = 8'b11111111;
+      DATA_R = game_over[SEL[2:0]];
+    end
+    else
+      DATA_G = board[SEL[2:0]];
   end
   
   always @(speed_level)
     case(speed_level)
-	    0: speed = 8'b10000000;
+      0: speed = 8'b10000000;
       1: speed = 8'b11000000;
       2: speed = 8'b11100000;
       3: speed = 8'b11110000;
