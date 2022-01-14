@@ -190,7 +190,7 @@ task generate_food(
       5: speed = 8'b11111100;
       6: speed = 8'b11111110;
       7: speed = 8'b11111111;
-	  endcase
+    endcase
 ```
 `always update matrix at every snake movation`  
 `when speed level changed, update output level of LEDs`
