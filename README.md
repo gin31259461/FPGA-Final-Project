@@ -12,10 +12,11 @@
 ![led](https://github.com/gin31259461/FPGA-final-project/blob/master/image/led.jpg?raw=true)
 
 ## Features
-* 7 seg record score, LEDs show speed level, matrix is main game sceen.
+* 7-seg record score, LEDs show speed level, matrix is main game sceen.
 * when snake eat dot, snake will lengthen.
 * touch boarder or itself, snake die.
 * speed go faster if get more score.
+* if snake length > 30, no lengthen, just speed up.
 
 ## Modules
 
@@ -77,25 +78,25 @@ task generate_food(
   logic[7:0] board[7:0] =
   '{
     8'b11111111, //x, y start position
-	 8'b11111111,
-	 8'b11111111,
-	 8'b11111111,
-	 8'b11111111,
-	 8'b11111111,
-	 8'b11111111,
-	 8'b11111111
+    8'b11111111,
+    8'b11111111,
+    8'b11111111,
+    8'b11111111,
+    8'b11111111,
+    8'b11111111,
+    8'b11111111
   };             //matrix x, y start position : row=x, col=y
   
     logic[7:0] game_over[7:0] =
   '{
     8'b10101010,
-	 8'b01010101,
-	 8'b10101010,
-	 8'b01010101,
-	 8'b10101010,
-	 8'b01010101,
-	 8'b10101010,
-	 8'b01010101
+    8'b01010101,
+    8'b10101010,
+    8'b01010101,
+    8'b10101010,
+    8'b01010101,
+    8'b10101010,
+    8'b01010101
   };
 ```
 `create initial matrix and game over status`
@@ -130,17 +131,17 @@ task generate_food(
     if(game_over_status != 1) begin
 	 
       generate_food(rand_x[rand_index], rand_y[rand_index], board, board);
-	   food_xor = rand_x[rand_index];
-	   food_yor = rand_y[rand_index];
-	 
-	   if(motion == 2'b00)
-	     snake_head_x += 1;
-	   else if(motion == 2'b01)
-	     snake_head_y += 1;
-	   else if(motion ==2'b10)
-	     snake_head_y -= 1;
-	   else if(motion == 2'b11)
-	     snake_head_x -= 1;
+      food_xor = rand_x[rand_index];
+      food_yor = rand_y[rand_index];
+
+      if(motion == 2'b00)
+       snake_head_x += 1;
+      else if(motion == 2'b01)
+       snake_head_y += 1;
+      else if(motion ==2'b10)
+       snake_head_y -= 1;
+      else if(motion == 2'b11)
+       snake_head_x -= 1;
 ```
 `... most operation it's here random food, snake movation, snake lengthen, if game over etc.`
 ``` v
@@ -150,14 +151,14 @@ task generate_food(
     	
     if({L, U, D, R} == 4'b1000 && motion != 2'b00)
       motion = 2'b11;
-	 else if({L, U, D, R} == 4'b0100 && motion != 2'b01)
+    else if({L, U, D, R} == 4'b0100 && motion != 2'b01)
       motion = 2'b10;
-	 else if({L, U, D, R} == 4'b0010 && motion != 2'b10)
+    else if({L, U, D, R} == 4'b0010 && motion != 2'b10)
       motion = 2'b01;
-	 else if({L, U, D, R} == 4'b0001 && motion != 2'b11)
+    else if({L, U, D, R} == 4'b0001 && motion != 2'b11)
       motion = 2'b00;
-	 else
-	   motion = motion;
+    else
+      motion = motion;
   end
 ```
 `when button click, snake immediately do movation by 1000HZ CLK`
@@ -167,32 +168,31 @@ task generate_food(
   always @(posedge CLK_div1000HZ) begin 
     	
     if(SEL == 4'b1111)
-	   SEL = 4'b1000;
-	 else
-	   SEL = SEL + 1'b1;
+	    SEL = 4'b1000;
+	  else
+	    SEL = SEL + 1'b1;
 	 
-	 if(game_over_status == 1) begin
-	   DATA_G = 8'b11111111;
-	   DATA_R = game_over[SEL[2:0]];
-	 end
-	 else
-	   DATA_G = board[SEL[2:0]];
+	  if(game_over_status == 1) begin
+	    DATA_G = 8'b11111111;
+	    DATA_R = game_over[SEL[2:0]];
+	  end
+	  else
+	    DATA_G = board[SEL[2:0]];
   end
   
   always @(speed_level)
     case(speed_level)
-	   0: speed = 8'b10000000;
-		1: speed = 8'b11000000;
-		2: speed = 8'b11100000;
-		3: speed = 8'b11110000;
-		4: speed = 8'b11111000;
-		5: speed = 8'b11111100;
-		6: speed = 8'b11111110;
-		7: speed = 8'b11111111;
-	 endcase
+	    0: speed = 8'b10000000;
+      1: speed = 8'b11000000;
+      2: speed = 8'b11100000;
+      3: speed = 8'b11110000;
+      4: speed = 8'b11111000;
+      5: speed = 8'b11111100;
+      6: speed = 8'b11111110;
+      7: speed = 8'b11111111;
+	  endcase
 ```
 `always update matrix at every snake movation`  
 `when speed level changed, update output level of LEDs`
 
-## Demo video
-![demo](https://drive.google.com/file/d/1c8j4ZdsNbCl-l_QzpenQULFqLHYlGXve/view?usp=sharing)
+[## Demo video](https://drive.google.com/file/d/1c8j4ZdsNbCl-l_QzpenQULFqLHYlGXve/view?usp=sharing)
