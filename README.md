@@ -195,4 +195,4 @@ task generate_food(
 `always update matrix at every snake movation`  
 `when speed level changed, update output level of LEDs`
 
-[## Demo video](https://drive.google.com/file/d/1c8j4ZdsNbCl-l_QzpenQULFqLHYlGXve/view?usp=sharing)
+## [Demo video](https://drive.google.com/file/d/1c8j4ZdsNbCl-l_QzpenQULFqLHYlGXve/view?usp=sharing)
